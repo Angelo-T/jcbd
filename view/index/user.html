@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <title>Document</title>
+    <script>
+        axios({
+                method: 'post',
+                url: "http://www.rcloud.cn/tp/public/index/user",
+                data: {
+
+                }
+            })
+            .then(function(res) {
+                console.log(res.data);
+            })
+            .catch(function(err) {
+                console.log(err);
+            })
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 最外层的id必须是app -->
+    </div>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data() {
+                return {
+                    name: "",
+                    options: []
+                }
+            },
+            methods: {
+                submit() {
+
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
