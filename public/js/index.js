@@ -19,15 +19,19 @@ var app = new Vue({
     },
     methods: {
         get_login() {
+            var flag = this.code_check()
+            if (!flag) {
+                alert("输入有误，请重新输入");
+                return;
+            }
             var loginData = {};
-            if (app._data.login.uname == "") {
+            if (app._data.login.uname == "") { //邮箱登录
                 loginData = {
                     uemail: app._data.login.uemail,
                     upsw: app._data.login.upsw,
-
                 }
             } else {
-                loginData = {
+                loginData = { //用户名登录
                     uname: app._data.login.uname,
                     upsw: app._data.login.upsw
                 }
@@ -40,6 +44,7 @@ var app = new Vue({
                 .then(res => {
                     console.log(res.data);
                     alert(res.data.msg);
+                    //跳转到首页
                     window.location.href = "index.html";
                 })
                 .catch(err => {
@@ -47,6 +52,7 @@ var app = new Vue({
                 })
         },
         code_check() {
+            var flag = true;
             axios({
                     method: 'post',
                     url: "http://www.rcloud.cn/tp/public/index/code_check",
@@ -56,15 +62,25 @@ var app = new Vue({
                 })
                 .then(res => {
                     console.log(res.data);
+                    if (res.data.code == 1) {
+                        $(".code_check_tip").css("display", "none");
+                        flag = true;
+                    } else {
+                        $(".code_check_tip").css("display", "inline");
+                        flag = false;
+                    }
                 })
+            return flag;
         },
         email_check() {
             //检测邮箱合法性
             var regExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
             if (!regExp.test(app._data.register.uemail)) {
                 $(".email_check_tip").css("display", "inline");
+                return false;
             } else {
                 $(".email_check_tip").css("display", "none");
+                return true;
             }
         },
         psw_check() {
@@ -74,13 +90,13 @@ var app = new Vue({
             if (flag) {
                 $(".psw_check_tip").text("密码中至少包含字母和数字")
                 $(".psw_check_tip").css("display", "inline");
-                return;
+                return false;
             }
             flag = /^\w+$/.test(psw);
             if (!flag) {
                 $(".psw_check_tip").text("密码中只能包含字母，数字，下划线")
                 $(".psw_check_tip").css("display", "inline");
-                return;
+                return false;
             }
             $(".psw_check_tip").css("display", "none");
             //检测两次密码一致性
@@ -88,12 +104,14 @@ var app = new Vue({
             if (checkpsw != psw) {
                 $(".checkpsw_check_tip").text("两次密码不一致")
                 $(".checkpsw_check_tip").css("display", "inline");
-                return;
+                return false;
             }
             $(".checkpsw_check_tip").css("display", "none");
+            return true;
         },
         uname_check() {
             //检测用户名是否被占用
+            var flag = true;
             axios({
                     method: 'post',
                     url: "http://www.rcloud.cn/tp/public/index/uname_check",
@@ -105,12 +123,21 @@ var app = new Vue({
                     console.log(res.data);
                     if (res.data) {
                         $(".name_check_tip").css("display", "none");
+                        flag = true;
                     } else {
                         $(".name_check_tip").css("display", "inline");
+                        flag = false;
                     }
                 })
+            return flag;
         },
         get_register() {
+            var flag = this.uname_check() && this.psw_check() && this.email_check();
+            if (!flag) {
+                alert("输入有误，请重新输入");
+                return;
+            }
+            //注册接口
             axios({
                     method: 'post',
                     url: "http://www.rcloud.cn/tp/public/index/get_register",
@@ -125,6 +152,7 @@ var app = new Vue({
                 })
         },
         get_uname() {
+            //获取随机用户名
             axios.get("http://www.rcloud.cn/tp/public/index/get_uname")
                 .then(res => {
                     console.log(res.data);
